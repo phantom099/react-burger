@@ -1,0 +1,57 @@
+.ingredients {
+    padding: 40px;
+    width: 50%;
+}
+
+.tabs {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.list {
+    overflow-y: auto;
+    max-height: 600px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.bi {
+    width: 50%;
+}
+
+.bi h1 {
+    text-align: center;
+}
+
+.bi__tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.bi__tabs div {
+    width: 33%;
+}
+
+.bicard {
+    background: transparent;
+    border: 0;
+    color: white;
+    width: 50%;
+    margin-top: 2em;
+}
+
+.bicard:focus {
+    outline: 0;
+}
+
+.bi__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}

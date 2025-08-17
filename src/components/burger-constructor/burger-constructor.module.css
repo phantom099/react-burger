@@ -1,0 +1,30 @@
+.burger_constructor {
+    padding: 40px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.scroll {
+    max-height: 30em;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.constructor-element_pos_top {
+    padding: 0;
+
+}

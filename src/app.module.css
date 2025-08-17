@@ -1,0 +1,15 @@
+.app {
+    background-color: #131316;
+    color: white;
+    min-height: 100vh;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.main {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+    width: 85%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
