@@ -4,7 +4,7 @@
 }
 
 .order p:first-child {
-    padding: .25em 0;
+    text-shadow: 0 0 20px rgb(74, 1, 193);
 }
 
 .order p:nth-child(2) {
@@ -28,8 +28,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 96px;
-    height: 96px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    background: rgb(47, 47, 55);
+    background: rgb(31, 31, 46);
+    transform: scale(1.25);
 }

@@ -1,6 +1,7 @@
 .header {
     background-color: #131316;
     padding: 20px 40px;
+    height: fit-content;
 }
 
 .nav {

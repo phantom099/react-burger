@@ -42,14 +42,12 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
   return (
     <section className={styles.bi}>
       <h1 className="text text_type_main-large mt-10 mb-5">Соберите бургер</h1>
-
       <div className={styles.bi__tabs}>
         <Tab value="bun" active={false} onClick={() => scrollToCategory('bun')}>Булки</Tab>
         <Tab value="sauce" active={false} onClick={() => scrollToCategory('sauce')}>Соусы</Tab>
         <Tab value="main" active={false} onClick={() => scrollToCategory('main')}>Начинки</Tab>
       </div>
-
-  <div ref={listRef} className={`${styles.bi__list} custom-scroll`}>
+      <div ref={listRef} className={`${styles.bi__list} custom-scroll`}>
         <div ref={bunRef}>
           <h2 className="text text_type_main-medium mt-10 mb-6">Булки</h2>
           <div className={styles.bi__category}>

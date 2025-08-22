@@ -21,3 +21,7 @@
     color: #8585ad;
     cursor: pointer;
 }
+
+.modal img {
+    margin-bottom: 0;
+}

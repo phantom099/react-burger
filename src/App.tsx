@@ -13,10 +13,18 @@ function App() {
   const [ingredients, setIngredients] = useState<TIngredient[]>([]);
   const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
   const [showOrder, setShowOrder] = useState(false);
+  const [mains, setMains] = useState<TIngredient[]>([]);
 
   useEffect(() => {
-    getIngredients().then(setIngredients).catch(console.error);
+    getIngredients().then(data => {
+      setIngredients(data);
+      setMains(data.filter(i => i.type !== 'bun'));
+    }).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    setMains(ingredients.filter(i => i.type !== 'bun'));
+  }, [ingredients]);
 
   const closeModal = () => {
     setSelectedIngredient(null);
@@ -28,7 +36,7 @@ function App() {
       <AppHeader />
       <main className={styles.main}>
         <BurgerIngredients ingredients={ingredients} usedIngredients={ingredients} onIngredientClick={setSelectedIngredient} />
-        <BurgerConstructor ingredients={ingredients} onOrder={() => setShowOrder(true)} />
+        <BurgerConstructor bun={ingredients.find(i => i.type === 'bun')} mains={mains} setMains={setMains} onOrder={() => setShowOrder(true)} />
       </main>
 
       {(selectedIngredient || showOrder) && (

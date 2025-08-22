@@ -9,7 +9,7 @@ interface Props {
 const IngredientDetails: React.FC<Props> = ({ ingredient }) => (
   <div className={styles.details}>
     <h3 className="text text_type_main-medium">Детали ингредиента</h3>
-    <img src={ingredient.image_large} alt={ingredient.name} />
+    <img src={ingredient.image_large} alt={ingredient.name} className={styles.image_class}/>
     <h3 className="text text_type_main-medium">{ingredient.name}</h3>
     <ul className={styles.nutrition}>
       <li>
