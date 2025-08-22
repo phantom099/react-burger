@@ -1,0 +1,21 @@
+.details {
+    text-align: center;
+}
+
+.details h3:first-child {
+    text-align: left;
+}
+
+.details img {
+    height: 240px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nutrition {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 24px;
+    list-style: none;
+    padding: 0;
+}
