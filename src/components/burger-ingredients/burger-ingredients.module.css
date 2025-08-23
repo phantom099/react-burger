@@ -34,11 +34,16 @@ body {
     overflow: hidden;
 }
 
-.cards {
+.bi__category {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 2fr));
     gap: 16px;
     margin-bottom: 32px;
+    text-align: center;
+}
+
+.bi__category div img {
+    text-align: center;
 }
 
 .bi {

@@ -1,13 +1,56 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../utils/types';
+import { useDrag } from 'react-dnd';
 import styles from'./burger-ingredients.module.css';
 
 type Props = {
   ingredients: TIngredient[];
   usedIngredients: TIngredient[];
   onIngredientClick: (item: TIngredient) => void;
+};
+
+interface IngredientCardProps {
+  ingredient: TIngredient;
+  onIngredientClick: (ingredient: TIngredient) => void;
+  usedCounts: Record<string, number>;
+}
+
+const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredientClick, usedCounts }) => {
+  const internalRef = useRef<HTMLDivElement>(null);
+  const [{ isDragging }, dragRef] = useDrag({
+    type: 'ingredient',
+    item: ingredient,
+    collect: (monitor) => {
+      try {
+        return {
+          isDragging: monitor.isDragging(),
+        };
+      } catch (error) {
+        console.error('Error in collect handler:', error);
+        return { isDragging: false };
+      }
+    },
+  });
+
+  dragRef(internalRef);
+
+  return (
+    <div ref={internalRef} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)} style={{ position: 'relative' }}>
+        <img className="bi-card__img" src={ingredient.image} alt={ingredient.name} />
+        {usedCounts[ingredient._id] && (
+          <span className={styles.selected_pos}>{usedCounts[ingredient._id]}</span>
+        )}
+        <div className="bi-card__price">
+          <span className="text text_type_digits-default">{ingredient.price}</span>
+          <CurrencyIcon type="primary" />
+        </div>
+        <p className="text text_type_main-default bi-card__name">{ingredient.name}</p>
+      </button>
+    </div>
+  );
 };
 
 const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients, usedIngredients, onIngredientClick }) => {
@@ -52,17 +95,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Булки</h2>
           <div className={styles.bi__category}>
             {groups.bun.map(item => (
-              <button key={item._id} className={styles.bicard} onClick={() => onIngredientClick(item)} style={{ position: 'relative' }}>
-                <img className="bi-card__img" src={item.image} alt={item.name} />
-                {usedCounts[item._id] && (
-                  <span className={styles.selected_pos}>{usedCounts[item._id]}</span>
-                )}
-                <div className="bi-card__price">
-                  <span className="text text_type_digits-default">{item.price}</span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className="text text_type_main-default bi-card__name">{item.name}</p>
-              </button>
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -70,17 +103,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Соусы</h2>
           <div className={styles.bi__category}>
             {groups.sauce.map(item => (
-              <button key={item._id} className={styles.bicard} onClick={() => onIngredientClick(item)} style={{ position: 'relative' }}>
-                <img className="bi-card__img" src={item.image} alt={item.name} />
-                {usedCounts[item._id] && (
-                  <span className={styles.selected_pos}>{usedCounts[item._id]}</span>
-                )}
-                <div className="bi-card__price">
-                  <span className="text text_type_digits-default">{item.price}</span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className="text text_type_main-default bi-card__name">{item.name}</p>
-              </button>
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -88,17 +111,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Начинки</h2>
           <div className={styles.bi__category}>
             {groups.main.map(item => (
-              <button key={item._id} className={styles.bicard} onClick={() => onIngredientClick(item)} style={{ position: 'relative' }}>
-                <img className="bi-card__img" src={item.image} alt={item.name} />
-                {usedCounts[item._id] && (
-                  <span className={styles.selected_pos}>{usedCounts[item._id]}</span>
-                )}
-                <div className="bi-card__price">
-                  <span className="text text_type_digits-default">{item.price}</span>
-                  <CurrencyIcon type="primary" />
-                </div>
-                <p className="text text_type_main-default bi-card__name">{item.name}</p>
-              </button>
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>

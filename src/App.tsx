@@ -36,7 +36,7 @@ function App() {
       <AppHeader />
       <main className={styles.main}>
         <BurgerIngredients ingredients={ingredients} usedIngredients={ingredients} onIngredientClick={setSelectedIngredient} />
-        <BurgerConstructor bun={ingredients.find(i => i.type === 'bun')} mains={mains} setMains={setMains} onOrder={() => setShowOrder(true)} />
+        <BurgerConstructor bun={ingredients.find(i => i.type === 'bun')} onOrder={() => setShowOrder(true)} />
       </main>
 
       {(selectedIngredient || showOrder) && (

@@ -11,7 +11,7 @@ export const store = configureStore({
     ingredientDetails: ingredientDetailsReducer,
     order: orderReducer,
   },
-  devTools: true,
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type RootState = {
