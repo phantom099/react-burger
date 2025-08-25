@@ -41,7 +41,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredien
       <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)} style={{ position: 'relative' }}>
         <img className="bi-card__img" src={ingredient.image} alt={ingredient.name} />
         {usedCounts[ingredient._id] && (
-          <span className={styles.selected_pos}>{usedCounts[ingredient._id]}</span>
+          <span className={styles.selected_pos}>{usedCounts[ingredient._id] || 0}</span>
         )}
         <div className="bi-card__price">
           <span className="text text_type_digits-default">{ingredient.price}</span>
@@ -78,9 +78,11 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
 
   // Подсчёт количества каждого ингредиента, использованного в конструкторе
   const usedCounts: Record<string, number> = {};
-  usedIngredients.forEach(i => {
-    usedCounts[i._id] = (usedCounts[i._id] || 0) + 1;
-  });
+  if (usedIngredients) {
+    usedIngredients.forEach(i => {
+      usedCounts[i._id] = (usedCounts[i._id] || 0) + 1;
+    });
+  }
 
   return (
     <section className={styles.bi}>

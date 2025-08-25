@@ -10,5 +10,7 @@ export interface TIngredient {
   image: string;
   image_mobile: string;
   image_large: string;
-  __v: number; 
+  __v: number;
+  uuid?: string; // Уникальный идентификатор для DND
+  count?: number; // Количество ингредиентов в заказе
 }
