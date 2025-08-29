@@ -1,23 +1,35 @@
+// ingredientsSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getIngredients } from '../utils/api';
 import { TIngredient } from '../types/ingredient';
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
-  async () => await getIngredients()
+  async () => {
+    const response = await getIngredients();
+    return response;
+  }
 );
+
+interface IngredientsState {
+  items: TIngredient[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: IngredientsState = {
+  items: [],
+  loading: false,
+  error: null,
+};
 
 const ingredientsSlice = createSlice({
   name: 'ingredients',
-  initialState: {
-    items: [] as TIngredient[],
-    loading: false,
-    error: null as string | null,
-  },
+  initialState,
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchIngredients.pending, state => {
+      .addCase(fetchIngredients.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -27,7 +39,7 @@ const ingredientsSlice = createSlice({
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Ошибка загрузки';
+        state.error = action.error.message || 'Failed to load ingredients';
       });
   },
 });

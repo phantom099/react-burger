@@ -1,0 +1,92 @@
+.constburger_constructor {
+    padding: 40px 0;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.empty {
+    font-size: 26px;
+    padding: 1.5em 0;
+    font-weight: bold;
+}
+
+
+.scroll {
+    max-height: 50vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2F2F37 #131316;
+    padding: 8px 0;
+    padding-right: .5em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.scroll::-webkit-scrollbar {
+    width: 8px;
+    background: #131316;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+    background: #2F2F37;
+    border-radius: 4px;
+}
+
+.icon {
+    vertical-align: middle;
+    height: 100%;
+}
+
+.total {
+    padding: 2em 0;
+    text-align: right;
+}
+
+.total span {
+    padding: 0 .2em;
+}
+
+.total button {
+    margin: 0 1em;
+}
+
+.constructor-element_pos_top {
+    padding: 0;
+}
+
+.drag_button {
+    margin-right: .5em;
+}
+
+@media (max-height: 2100px) {
+    .scroll {
+        height: 100vh;
+    }
+}
+
+@media (max-height: 1800px) {
+    .scroll {
+        height: 85vh;
+    }
+}
+
+@media (max-height: 1500px) {
+    .scroll {
+        height: 75vh;
+    }
+}
+
+@media (max-height: 1200px) {
+    .scroll {
+        height: 58vh;
+    }
+}
+
+@media (max-height: 750px) {
+    .scroll {
+        height: 40vh;
+    }
+}

@@ -6,15 +6,16 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { addIngredient, removeIngredient, reorderIngredients } from '../../services/constructorSlice';
-import { RootState } from '../../services/store';
+import { AppDispatch, RootState } from '../../services/store';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   onOrder: () => void;
 }
 
 const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
-  const dispatch = useDispatch();
-  const { bun, mains } = useSelector((state: RootState) => state.constructor);
+  const dispatch = useDispatch<AppDispatch>();
+  const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
   const sectionRef = useRef<HTMLElement>(null);
 
   const total = React.useMemo(() => {
@@ -29,6 +30,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
   }, [bun, mains]);
 
   const handleDragEnd = (result: DropResult) => {
+    console.log('Drag ended:', result);
     try {
       if (!result.destination) return;
       
@@ -53,7 +55,8 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
     accept: 'ingredient',
     drop: (item: TIngredient) => {
       try {
-        dispatch(addIngredient(item));
+        const itemWithUUID = {...item, uuid: uuidv4()};
+        dispatch(addIngredient(itemWithUUID));
       } catch (error) {
         console.error('Error in drop handler:', error);
       }
@@ -76,7 +79,6 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
     <section
       className={styles.burger_constructor}
       ref={sectionRef}
-      style={{ backgroundColor: isOver ? '#e3f2fd' : 'transparent' }}
     >
       {bun ? (
         <div style={{ display: 'flex', alignItems: 'center' }}>

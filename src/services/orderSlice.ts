@@ -1,38 +1,57 @@
+// orderSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { TIngredient } from '../types/ingredient';
 import { API_BASE } from '../utils/constants';
 
 export const createOrder = createAsyncThunk(
   'order/createOrder',
-  async (ingredientIds: string[]) => {
-    const res = await fetch(`${API_BASE}/orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredients: ingredientIds }),
-    });
-    if (!res.ok) throw new Error('Ошибка создания заказа');
-    const data = await res.json();
-    return data.order.number;
+  async (ingredientIds: string[], { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_BASE}/orders`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('accessToken') || '',
+        },
+        body: JSON.stringify({ ingredients: ingredientIds }),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`Order creation failed: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      return data.order.number;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
   }
 );
 
+interface OrderState {
+  number: number | null;
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: OrderState = {
+  number: null,
+  loading: false,
+  error: null,
+};
+
 const orderSlice = createSlice({
   name: 'order',
-  initialState: {
-    number: null as number | null,
-    loading: false,
-    error: null as string | null,
-  },
+  initialState,
   reducers: {
-    clearOrder(state) {
+    clearOrder: (state) => {
       state.number = null;
       state.loading = false;
       state.error = null;
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(createOrder.pending, state => {
+      .addCase(createOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -42,7 +61,7 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Ошибка заказа';
+        state.error = action.payload as string || 'Order creation failed';
       });
   },
 });

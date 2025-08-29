@@ -1,16 +1,23 @@
+// ingredientDetailsSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '../types/ingredient';
 
+interface IngredientDetailsState {
+  item: TIngredient | null;
+}
+
+const initialState: IngredientDetailsState = {
+  item: null,
+};
+
 const ingredientDetailsSlice = createSlice({
   name: 'ingredientDetails',
-  initialState: {
-    item: null as TIngredient | null,
-  },
+  initialState,
   reducers: {
-    setIngredientDetails(state, action: PayloadAction<TIngredient>) {
+    setIngredientDetails: (state, action: PayloadAction<TIngredient>) => {
       state.item = action.payload;
     },
-    clearIngredientDetails(state) {
+    clearIngredientDetails: (state) => {
       state.item = null;
     },
   },

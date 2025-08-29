@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '../types/ingredient';
-import { v4 as uuidv4 } from 'uuid';
 
 interface ConstructorState {
   bun: TIngredient | null;
@@ -34,7 +33,6 @@ const constructorSlice = createSlice({
           }
           state.mains.push({ 
             ...action.payload, 
-            uuid: uuidv4() 
           });
         }
       } catch (error) {
@@ -43,24 +41,19 @@ const constructorSlice = createSlice({
           state.mains = [];
         }
       }
+
     },
     removeIngredient(state, action: PayloadAction<string>) {
-      try {
-        if (state.bun && state.bun._id === action.payload) {
-          state.bun = null;
-        } else {
-          if (!Array.isArray(state.mains)) {
-            state.mains = [];
-          } else {
-            state.mains = state.mains.filter(ingredient => 
-              ingredient._id !== action.payload
-            );
-          }
-        }
-      } catch (error) {
-        console.error('Error in removeIngredient:', error);
+      if (state.bun && state.bun._id === action.payload) {
+        state.bun = null;
+      } else {
         if (!Array.isArray(state.mains)) {
           state.mains = [];
+        } else {
+          const idx = state.mains.findIndex(ingredient => ingredient._id === action.payload);
+          if (idx !== -1) {
+            state.mains.splice(idx, 1);
+          }
         }
       }
     },
@@ -97,6 +90,8 @@ const constructorSlice = createSlice({
   },
 });
 
+
+console.log(constructorSlice.reducer);
 export const { setBun, addIngredient, removeIngredient, reorderIngredients, clearConstructor } = constructorSlice.actions;
 export type { ConstructorState };
 export default constructorSlice.reducer;

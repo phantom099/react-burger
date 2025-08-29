@@ -16,7 +16,7 @@ function App() {
   const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
   const [showOrder, setShowOrder] = useState(false);
 
-  const { bun, mains } = useSelector((state: RootState) => state.constructor);
+  const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
   
   const usedIngredients = React.useMemo(() => {
     try {
