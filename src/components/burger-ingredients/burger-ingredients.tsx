@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../utils/types';
@@ -8,7 +9,7 @@ import styles from'./burger-ingredients.module.css';
 type Props = {
   ingredients: TIngredient[];
   usedIngredients: TIngredient[];
-  onIngredientClick: (item: TIngredient) => void;
+  onIngredientClick?: (item: TIngredient) => void;
 };
 
 interface IngredientCardProps {
@@ -54,6 +55,15 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredien
 };
 
 const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients, usedIngredients, onIngredientClick }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleIngredientClick = (ingredient: TIngredient) => {
+    if (onIngredientClick) {
+      onIngredientClick(ingredient);
+    } else {
+      navigate(`/ingredients/${ingredient._id}`, { state: { background: location } });
+    }
+  };
   const bunRef = React.useRef<HTMLDivElement>(null);
   const sauceRef = React.useRef<HTMLDivElement>(null);
   const mainRef = React.useRef<HTMLDivElement>(null);
@@ -97,7 +107,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Булки</h2>
           <div className={styles.bi__category}>
             {groups.bun.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -105,7 +115,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Соусы</h2>
           <div className={styles.bi__category}>
             {groups.sauce.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -113,7 +123,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Начинки</h2>
           <div className={styles.bi__category}>
             {groups.main.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
