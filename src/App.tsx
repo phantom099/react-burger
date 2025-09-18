@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import ProtectedRouteElement from './components/protected-route-element';
+import HomePage from './pages/home';
+import LoginPage from './pages/login';
+import RegisterPage from './pages/register';
+import ForgotPasswordPage from './pages/forgot-password';
+import ResetPasswordPage from './pages/reset-password';
+import ProfilePage from './pages/profile';
+import IngredientDetailsPage from './pages/ingredient-details';
+import NotFoundPage from './pages/not-found';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './services/store';
 import AppHeader from './components/app-header/app-header';
 import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
@@ -7,55 +17,90 @@ import BurgerConstructor from './components/burger-constructor/burger-constructo
 import Modal from './components/modal/modal';
 import IngredientDetails from './components/ingredient-details/ingredient-details';
 import OrderDetails from './components/order-details/order-details';
+import { clearOrder } from './services/orderSlice';
+import { fetchUserThunk } from './services/userThunks';
 import { getIngredients } from './utils/api';
 import { TIngredient } from './types/ingredient';
 import styles from './app.module.css';
 
+
 function App() {
-  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUserThunk() as any);
+  }, [dispatch]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const background = location.state && location.state.background;
   const [showOrder, setShowOrder] = useState(false);
 
-  const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
-  
-  const usedIngredients = React.useMemo(() => {
-    try {
-      return [...(bun ? [bun, bun] : []), ...(Array.isArray(mains) ? mains : [])];
-    } catch (error) {
-      console.error('Error creating usedIngredients:', error);
-      return [];
-    }
-  }, [bun, mains]);
-
-  useEffect(() => {
-    getIngredients().then(setIngredients).catch(console.error);
-  }, []);
-
   const closeModal = () => {
-    setSelectedIngredient(null);
     setShowOrder(false);
+    dispatch(clearOrder());
+    if (background) {
+      navigate(-1);
+    }
   };
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <main className={styles.main}>
-        <BurgerIngredients 
-          ingredients={ingredients} 
-          usedIngredients={usedIngredients} 
-          onIngredientClick={setSelectedIngredient} 
-        />
-        <BurgerConstructor onOrder={() => setShowOrder(true)} />
-      </main>
+      <Routes location={background || location}>
+        <Route path="/" element={<HomePage onOrder={() => setShowOrder(true)} />} />
+        <Route path="/login" element={
+          <ProtectedRouteElement onlyUnAuth>
+            <LoginPage />
+          </ProtectedRouteElement>
+        } />
+        <Route path="/register" element={
+          <ProtectedRouteElement onlyUnAuth>
+            <RegisterPage />
+          </ProtectedRouteElement>
+        } />
+        <Route path="/forgot-password" element={
+          <ProtectedRouteElement onlyUnAuth>
+            <ForgotPasswordPage />
+          </ProtectedRouteElement>
+        } />
+        <Route path="/reset-password" element={
+          <ProtectedRouteElement onlyUnAuth>
+            <ResetPasswordPage />
+          </ProtectedRouteElement>
+        } />
+        <Route path="/profile/*" element={
+          <ProtectedRouteElement>
+            <ProfilePage />
+          </ProtectedRouteElement>
+        } />
+        <Route path="/ingredients/:id" element={<IngredientDetailsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
 
-      {(selectedIngredient || showOrder) && (
+      {/* Модальное окно ингредиента */}
+      {background && (
+        <Routes>
+          <Route path="/ingredients/:id" element={
+            <Modal onClose={closeModal}>
+              <IngredientDetailsPage />
+            </Modal>
+          } />
+        </Routes>
+      )}
+
+      {/* Модальное окно заказа */}
+      {showOrder && (
         <Modal onClose={closeModal}>
-          {selectedIngredient && <IngredientDetails ingredient={selectedIngredient} />}
-          {showOrder && <OrderDetails />}
+          <OrderDetails />
         </Modal>
       )}
     </div>
   );
 }
 
-export default App;
+// Оборачиваем App в BrowserRouter для доступа к useLocation
+const AppWithRouter = () => (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+export default AppWithRouter;

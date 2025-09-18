@@ -1,0 +1,8 @@
+.not_found_block {
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+    margin-top: 4em;
+    color: #8585AD;
+    text-shadow: 0 0 5px #8585AD;
+}
