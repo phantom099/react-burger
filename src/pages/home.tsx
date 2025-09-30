@@ -1,6 +1,7 @@
 
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
+import { AppDispatch } from '../services/store';
 import BurgerIngredients from '../components/burger-ingredients/burger-ingredients';
 import BurgerConstructor from '../components/burger-constructor/burger-constructor';
 import { RootState } from '../services/store';
@@ -12,7 +13,7 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onOrder }) => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const ingredients = useSelector((state: RootState) => state.ingredients.items || []);
 	const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
 	const usedIngredients = React.useMemo(() => {
@@ -24,7 +25,7 @@ const HomePage: React.FC<HomePageProps> = ({ onOrder }) => {
 	}, [bun, mains]);
 
 	useEffect(() => {
-		dispatch(fetchIngredients() as any);
+		dispatch(fetchIngredients());
 	}, [dispatch]);
 
 		return (

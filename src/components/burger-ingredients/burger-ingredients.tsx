@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../utils/types';
 import { useDrag } from 'react-dnd';
@@ -54,7 +53,7 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredien
   );
 };
 
-const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients, usedIngredients, onIngredientClick }) => {
+const BurgerIngredients: React.FC<Props> = ({ ingredients, usedIngredients, onIngredientClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const handleIngredientClick = (ingredient: TIngredient) => {
@@ -132,10 +131,5 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
   );
 };
 
-BurgerIngredients.propTypes = {
-  ingredients: PropTypes.arrayOf(PropTypes.object).isRequired,
-  usedIngredients: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onIngredientClick: PropTypes.func.isRequired
-};
 
 export default BurgerIngredients;

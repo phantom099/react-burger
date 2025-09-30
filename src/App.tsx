@@ -9,25 +9,26 @@ import ResetPasswordPage from './pages/reset-password';
 import ProfilePage from './pages/profile';
 import IngredientDetailsPage from './pages/ingredient-details';
 import NotFoundPage from './pages/not-found';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from './services/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './services/store';
+
 import AppHeader from './components/app-header/app-header';
-import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
-import BurgerConstructor from './components/burger-constructor/burger-constructor';
+
+
 import Modal from './components/modal/modal';
-import IngredientDetails from './components/ingredient-details/ingredient-details';
+
 import OrderDetails from './components/order-details/order-details';
 import { clearOrder } from './services/orderSlice';
 import { fetchUserThunk } from './services/userThunks';
-import { getIngredients } from './utils/api';
-import { TIngredient } from './types/ingredient';
+
+
 import styles from './app.module.css';
 
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    dispatch(fetchUserThunk() as any);
+    dispatch(fetchUserThunk());
   }, [dispatch]);
   const location = useLocation();
   const navigate = useNavigate();

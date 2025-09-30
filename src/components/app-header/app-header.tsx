@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo, BurgerIcon, ListIcon, ProfileIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './app-header.module.css';
@@ -51,6 +50,5 @@ const AppHeader = () => {
   );
 };
 
-AppHeader.propTypes = {};
 
 export default AppHeader;
