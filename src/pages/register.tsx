@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../services/store';
 import { registerUserThunk } from '../services/userThunks';
 import { RootState } from '../services/store';
 import styles from './forms.module.css';
@@ -12,7 +13,7 @@ const RegisterPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [localError, setLocalError] = useState<string | null>(null);
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const { isAuth, loading, error } = useSelector((state: RootState) => state.user);
 
@@ -42,7 +43,7 @@ const RegisterPage = () => {
 			return;
 		}
 		setLocalError(null);
-		dispatch(registerUserThunk(email, password, name) as any);
+		dispatch(registerUserThunk(email, password, name));
 	};
 
 	return (

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../services/store';
 import { logoutUserThunk, fetchUserThunk, updateUserThunk } from '../services/userThunks';
 import { RootState } from '../services/store';
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
@@ -10,7 +11,7 @@ import styles from './forms.module.css';
 
 
 const ProfilePage = () => {
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const { email, name, loading, error } = useSelector((state: RootState) => state.user);
 
@@ -20,7 +21,7 @@ const ProfilePage = () => {
 	const [initial, setInitial] = useState({ name: '', email: '' });
 
 	useEffect(() => {
-		dispatch(fetchUserThunk() as any);
+		dispatch(fetchUserThunk());
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -30,7 +31,7 @@ const ProfilePage = () => {
 
 	const handleLogout = (e: React.MouseEvent) => {
 		e.preventDefault();
-		dispatch(logoutUserThunk() as any);
+		dispatch(logoutUserThunk());
 		navigate('/login', { replace: true });
 	};
 
@@ -41,7 +42,7 @@ const ProfilePage = () => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		dispatch(updateUserThunk({ name: form.name, email: form.email, password: form.password || undefined }) as any);
+		dispatch(updateUserThunk({ name: form.name, email: form.email, password: form.password || undefined }));
 		setEditMode(false);
 		setForm(f => ({ ...f, password: '' }));
 	};

@@ -1,3 +1,7 @@
+import FeedPage from './pages/feed';
+import FeedOrderPage from './pages/feed-order-page';
+import ProfileOrdersPage from './pages/profile-orders/profile-orders';
+import ProfileOrderDetails from './pages/profile-orders/order-details';
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import ProtectedRouteElement from './components/protected-route-element';
@@ -9,25 +13,28 @@ import ResetPasswordPage from './pages/reset-password';
 import ProfilePage from './pages/profile';
 import IngredientDetailsPage from './pages/ingredient-details';
 import NotFoundPage from './pages/not-found';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from './services/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './services/store';
+
 import AppHeader from './components/app-header/app-header';
-import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
-import BurgerConstructor from './components/burger-constructor/burger-constructor';
+
+
 import Modal from './components/modal/modal';
-import IngredientDetails from './components/ingredient-details/ingredient-details';
+
 import OrderDetails from './components/order-details/order-details';
 import { clearOrder } from './services/orderSlice';
 import { fetchUserThunk } from './services/userThunks';
-import { getIngredients } from './utils/api';
-import { TIngredient } from './types/ingredient';
+import { fetchIngredients } from './services/ingredientsSlice';
+
+
 import styles from './app.module.css';
 
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    dispatch(fetchUserThunk() as any);
+    dispatch(fetchUserThunk());
+    dispatch(fetchIngredients());
   }, [dispatch]);
   const location = useLocation();
   const navigate = useNavigate();
@@ -45,7 +52,14 @@ function App() {
   return (
     <div className={styles.app}>
       <AppHeader />
-      <Routes location={background || location}>
+  <Routes location={background || location}>
+  <Route path="/feed" element={<FeedPage />} />
+  <Route path="/feed/:id" element={<FeedOrderPage />} />
+  <Route path="/profile/orders/:id" element={
+    <ProtectedRouteElement>
+      <FeedOrderPage />
+    </ProtectedRouteElement>
+  } />
         <Route path="/" element={<HomePage onOrder={() => setShowOrder(true)} />} />
         <Route path="/login" element={
           <ProtectedRouteElement onlyUnAuth>
@@ -72,16 +86,29 @@ function App() {
             <ProfilePage />
           </ProtectedRouteElement>
         } />
+        <Route path="/profile/orders" element={
+          <ProtectedRouteElement>
+            <ProfileOrdersPage />
+          </ProtectedRouteElement>
+        } />
         <Route path="/ingredients/:id" element={<IngredientDetailsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       {/* Модальное окно ингредиента */}
+
+      {/* Модальные окна для ингредиента и заказа */}
       {background && (
         <Routes>
           <Route path="/ingredients/:id" element={
             <Modal onClose={closeModal}>
               <IngredientDetailsPage />
+            </Modal>
+          } />
+          {/* Удалено модальное окно для /feed/:id, теперь всегда отдельная страница */}
+          <Route path="/profile/orders/:id" element={
+            <Modal onClose={closeModal}>
+              <ProfileOrderDetails />
             </Modal>
           } />
         </Routes>
