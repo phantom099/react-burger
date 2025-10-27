@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../types/ingredient';
 import styles from './burger-constructor.module.css';
@@ -11,12 +11,9 @@ import { AppDispatch, RootState } from '../../services/store';
 import { createOrder } from '../../services/orderSlice';
 import { v4 as uuidv4 } from 'uuid';
 
-interface Props {
-  onOrder: () => void;
-}
-
-const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
+const BurgerConstructor: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
   const isAuth = useSelector((state: RootState) => state.user.isAuth);
@@ -55,7 +52,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
     }
   };
 
-  const [{ isOver }, dropRef] = useDrop({
+  const [, dropRef] = useDrop({
     accept: 'ingredient',
     drop: (item: TIngredient) => {
       try {
@@ -80,7 +77,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
   dropRef(sectionRef);
 
 
-  const handleOrderClick = () => {
+  const handleOrderClick = async () => {
     if (!isAuth) {
       navigate('/login');
       return;
@@ -88,8 +85,26 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
     // Собираем массив id ингредиентов: сначала булка (верх), потом начинки, потом булка (низ)
     if (!bun) return;
     const ingredientIds = [bun._id, ...(Array.isArray(mains) ? mains.map(i => i._id) : []), bun._id];
-    dispatch(createOrder(ingredientIds));
-    onOrder();
+    try {
+      // Immediately open the order modal (background = current location)
+      // so user sees the modal while order is being processed.
+      // eslint-disable-next-line no-console
+      console.debug('[Constructor] opening order modal and creating order, ids:', ingredientIds);
+      navigate('/order', { state: { background: location } });
+
+      // Fire the async createOrder but keep the modal open during processing
+      const result = await dispatch(createOrder(ingredientIds));
+      // eslint-disable-next-line no-console
+      console.debug('[Constructor] createOrder result:', result);
+      if ((result as any).type && (result as any).type.endsWith('/rejected')) {
+        // Log if failed; OrderModalPage will read error from store and display
+        // eslint-disable-next-line no-console
+        console.warn('[Constructor] createOrder rejected', result);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Constructor] error when creating order', err);
+    }
   };
 
   return (

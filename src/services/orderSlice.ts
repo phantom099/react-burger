@@ -2,9 +2,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { API_BASE } from '../utils/constants';
 
-export const createOrder = createAsyncThunk(
+export const createOrder = createAsyncThunk<number, string[], { rejectValue: string }>(
   'order/createOrder',
-  async (ingredientIds: string[], { rejectWithValue }) => {
+  async (ingredientIds, { rejectWithValue }) => {
     try {
       const res = await fetch(`${API_BASE}/orders`, {
         method: 'POST',

@@ -6,9 +6,10 @@ import styles from './modal.module.css';
 interface Props {
   children: React.ReactNode;
   onClose: () => void;
+  title?: string;
 }
 
-const Modal: React.FC<Props> = ({ children, onClose }) => {
+const Modal: React.FC<Props> = ({ children, onClose, title }) => {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handleEsc);
@@ -20,6 +21,7 @@ const Modal: React.FC<Props> = ({ children, onClose }) => {
       <ModalOverlay onClick={onClose} />
       <div className={styles.modal}>
         <button className={styles.close} onClick={onClose}>×</button>
+        {title && <h2 className={`text text_type_main-large ${styles.title}`}>{title}</h2>}
         {children}
       </div>
     </>,

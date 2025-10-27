@@ -3,9 +3,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getIngredients } from '../utils/api';
 import { TIngredient } from '../types/ingredient';
 
-export const fetchIngredients = createAsyncThunk(
+export const fetchIngredients = createAsyncThunk<TIngredient[], void, { rejectValue: string }>(
   'ingredients/fetchIngredients',
-  async () => {
+  async (_, { rejectWithValue }) => {
     const response = await getIngredients();
     return response;
   }

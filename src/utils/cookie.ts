@@ -1,6 +1,10 @@
 // cookie.ts — простые функции для работы с куками
 
-export function setCookie(name: string, value: string, props?: { [key: string]: any }) {
+export function setCookie(
+  name: string,
+  value: string,
+  props?: Record<string, string | number | boolean | Date | undefined>
+) {
   props = props || {};
   let exp = props.expires;
   if (typeof exp === "number" && exp) {
@@ -8,7 +12,7 @@ export function setCookie(name: string, value: string, props?: { [key: string]: 
     d.setTime(d.getTime() + exp * 1000);
     exp = props.expires = d;
   }
-  if (exp && exp.toUTCString) {
+  if (exp && typeof exp !== 'string' && typeof exp !== 'number' && typeof exp !== 'boolean' && exp instanceof Date) {
     props.expires = exp.toUTCString();
   }
   value = encodeURIComponent(value);
@@ -26,7 +30,7 @@ export function setCookie(name: string, value: string, props?: { [key: string]: 
 export function getCookie(name: string): string | undefined {
   const matches = document.cookie.match(
     new RegExp(
-      "(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, "\\$1") + "=([^;]*)"
+  "(?:^|; )" + name.replace(/([.$?*|{}()\]\\/+^])/g, "\\$1") + "=([^;]*)"
     )
   );
   return matches ? decodeURIComponent(matches[1]) : undefined;

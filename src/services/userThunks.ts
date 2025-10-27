@@ -1,7 +1,7 @@
 import { AppDispatch } from './store';
 
 import { setUser, clearUser, setLoading, setError } from './userSlice';
-import { registerUser, loginUser, logoutUser, refreshTokenRequest, saveTokens, clearTokens, getAccessToken, getRefreshToken, getUser, updateUser } from '../utils/api';
+import { registerUser, loginUser, logoutUser, refreshTokenRequest, saveTokens, clearTokens, getAccessToken, getRefreshToken, getUser, updateUser, IAuthResponse, IUpdateUserResponse, IRefreshResponse } from '../utils/api';
 
 // Получение данных пользователя с автоматическим обновлением токена
 export const fetchUserThunk = () => async (dispatch: AppDispatch) => {
@@ -11,24 +11,26 @@ export const fetchUserThunk = () => async (dispatch: AppDispatch) => {
     if (!accessToken) throw new Error('Нет accessToken');
     let res = await getUser(accessToken);
     dispatch(setUser(res.user));
-  } catch (e: any) {
+  } catch (error) {
     // Если accessToken истёк, пробуем обновить
+    const e = error as Error;
     if (e.message && e.message.includes('401')) {
       try {
         const refreshToken = getRefreshToken();
         if (!refreshToken) throw new Error('Нет refreshToken');
-        const refreshRes = await refreshTokenRequest(refreshToken) as { success: boolean; accessToken: string; refreshToken: string; };
+  const refreshRes: IRefreshResponse = await refreshTokenRequest(refreshToken);
         if (refreshRes.success) {
           saveTokens(refreshRes.accessToken, refreshRes.refreshToken);
           const userRes = await getUser(refreshRes.accessToken);
           dispatch(setUser(userRes.user));
         } else {
           // refresh не удался — делаем logout
-          dispatch(logoutUserThunk() as any);
+          dispatch(logoutUserThunk());
         }
-      } catch (err: any) {
+      } catch (error) {
         // refresh не удался — делаем logout
-        dispatch(logoutUserThunk() as any);
+        console.error('Failed to refresh token:', (error as Error).message);
+        dispatch(logoutUserThunk());
       }
     } else {
       dispatch(setError(e.message || 'Ошибка получения пользователя'));
@@ -44,7 +46,7 @@ export const updateUserThunk = (user: { name?: string; email?: string; password?
   try {
     let accessToken = getAccessToken();
     if (!accessToken) throw new Error('Нет accessToken');
-    const res = await updateUser(accessToken, user) as { success: boolean; user: { email: string; name: string } };
+    const res: IUpdateUserResponse = await updateUser(accessToken, user);
     if (res.success) {
       dispatch(setUser(res.user));
     } else {
@@ -61,12 +63,12 @@ export const updateUserThunk = (user: { name?: string; email?: string; password?
 export const registerUserThunk = (email: string, password: string, name: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const res = await registerUser(email, password, name) as any;
+    const res: IAuthResponse = await registerUser(email, password, name);
     if (res.success) {
       dispatch(setUser(res.user));
       saveTokens(res.accessToken, res.refreshToken);
     } else {
-      dispatch(setError(res.message || 'Registration failed'));
+      dispatch(setError('Registration failed'));
     }
   } catch (e: any) {
     // Если сервер вернул json с message, покажем его
@@ -87,12 +89,7 @@ export const registerUserThunk = (email: string, password: string, name: string)
 export const loginUserThunk = (email: string, password: string) => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
-    const res = await loginUser(email, password) as {
-      success: boolean;
-      user: { email: string; name: string };
-      accessToken: string;
-      refreshToken: string;
-    };
+    const res: IAuthResponse = await loginUser(email, password);
     if (res.success) {
       dispatch(setUser(res.user));
       saveTokens(res.accessToken, res.refreshToken);
@@ -128,11 +125,7 @@ export const refreshTokenThunk = () => async (dispatch: AppDispatch) => {
   dispatch(setLoading(true));
   try {
     const refreshToken = localStorage.getItem('refreshToken') || '';
-    const res = await refreshTokenRequest(refreshToken) as {
-      success: boolean;
-      accessToken: string;
-      refreshToken: string;
-    };
+    const res: IRefreshResponse = await refreshTokenRequest(refreshToken);
     if (res.success) {
       saveTokens(res.accessToken, res.refreshToken);
     } else {

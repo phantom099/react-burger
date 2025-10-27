@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../services/store';
 import { loginUserThunk } from '../services/userThunks';
 import { RootState } from '../services/store';
 import styles from './forms.module.css';
@@ -11,7 +12,7 @@ import styles from './forms.module.css';
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const dispatch = useDispatch();
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const { isAuth, loading, error } = useSelector((state: RootState) => state.user);
 
@@ -23,7 +24,7 @@ const LoginPage = () => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		dispatch(loginUserThunk(email, password) as any);
+		dispatch(loginUserThunk(email, password));
 	};
 
 	return (
