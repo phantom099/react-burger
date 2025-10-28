@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../types/ingredient';
 import styles from './burger-constructor.module.css';
@@ -7,6 +8,7 @@ import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { addIngredient, removeIngredient, reorderIngredients } from '../../services/constructorSlice';
 import { AppDispatch, RootState } from '../../services/store';
+import { createOrder } from '../../services/orderSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
@@ -14,8 +16,10 @@ interface Props {
 }
 
 const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
+  const isAuth = useSelector((state: RootState) => state.user.isAuth);
   const sectionRef = useRef<HTMLElement>(null);
 
   const total = React.useMemo(() => {
@@ -75,9 +79,22 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
 
   dropRef(sectionRef);
 
+
+  const handleOrderClick = () => {
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
+    // Собираем массив id ингредиентов: сначала булка (верх), потом начинки, потом булка (низ)
+    if (!bun) return;
+    const ingredientIds = [bun._id, ...(Array.isArray(mains) ? mains.map(i => i._id) : []), bun._id];
+    dispatch(createOrder(ingredientIds));
+    onOrder();
+  };
+
   return (
     <section
-      className={styles.burger_constructor}
+      className={styles.constburger_constructor}
       ref={sectionRef}
     >
       {bun ? (
@@ -151,7 +168,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
       <div className={styles.total}>
         <span className="text text_type_digits-medium">{total}</span>
         <CurrencyIcon className={styles.icon} type="primary" />
-        <Button htmlType='button' type="primary" size="medium" onClick={onOrder}>
+  <Button htmlType='button' type="primary" size="medium" onClick={handleOrderClick}>
           Оформить заказ
         </Button>
       </div>

@@ -1,6 +1,6 @@
 .constburger_constructor {
-    padding: 40px 0;
-    width: 50%;
+    padding: 20px 0;
+    width: 35%;
     display: flex;
     flex-direction: column;
     gap: 16px;
