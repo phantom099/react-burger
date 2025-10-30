@@ -3,6 +3,7 @@ import { AppDispatch } from './store';
 import { wsConnect, wsDisconnect, wsError, wsMessage } from './profileOrdersSlice';
 import { TOrdersResponse } from '../types/order';
 import { getAccessToken } from '../utils/api';
+import { API_BASE } from '../utils/constants';
 
 let socket: WebSocket | null = null;
 
@@ -15,7 +16,7 @@ export const connectProfileOrdersWS = (dispatch: AppDispatch) => {
   }
   // accessToken должен быть без Bearer
   const cleanToken = token.replace('Bearer ', '');
-  socket = new WebSocket(`wss://norma.nomoreparties.space/orders?token=${cleanToken}`);
+  socket = new WebSocket(`wss://${API_BASE}/orders?token=${cleanToken}`);
 
   socket.onopen = () => {
     dispatch(wsConnect());
