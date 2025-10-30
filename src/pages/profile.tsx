@@ -2,18 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../services/store';
+import { useAppDispatch, useAppSelector } from '../services/hooks';
 import { logoutUserThunk, fetchUserThunk, updateUserThunk } from '../services/userThunks';
-import { RootState } from '../services/store';
+
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import styles from './forms.module.css';
+import styles from './profile.module.css';
 
 
 const ProfilePage = () => {
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { email, name, loading, error } = useSelector((state: RootState) => state.user);
+	const { email, name, loading, error } = useAppSelector(state => state.user);
 
 	// Локальное состояние для редактирования
 	const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -54,28 +53,25 @@ const ProfilePage = () => {
 		};
 
 	return (
-		<div style={{ display: 'flex', maxWidth: 900, margin: '40px auto', minHeight: 400 }}>
-			<nav style={{ minWidth: 220, marginRight: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+		<div className={styles.container}>
+			<nav className={styles.navigation}>
 				<NavLink
 					to="/profile"
 					end
-					className={({ isActive }) => `text text_type_main-medium ${isActive ? '' : 'text_color_inactive'}`}
-					style={{ textDecoration: 'none', padding: 8, borderRadius: 8, background: '#222' }}
+					className={({ isActive }) => `text text_type_main-medium ${isActive ? '' : 'text_color_inactive'} ${styles.navLink}`}
 				>
 					Профиль
 				</NavLink>
 				<NavLink
 					to="/profile/orders"
-					className={({ isActive }) => `text text_type_main-medium ${isActive ? '' : 'text_color_inactive'}`}
-					style={{ textDecoration: 'none', padding: 8, borderRadius: 8, background: '#222' }}
+					className={({ isActive }) => `text text_type_main-medium ${isActive ? '' : 'text_color_inactive'} ${styles.navLink}`}
 				>
 					История заказов
 				</NavLink>
 				<NavLink
 					to="#"
 					onClick={handleLogout}
-					className="text text_type_main-medium text_color_inactive"
-					style={{ textDecoration: 'none', padding: 8, borderRadius: 8, background: '#222' }}
+					className={`text text_type_main-medium text_color_inactive ${styles.navLink}`}
 				>
 					Выход
 				</NavLink>
@@ -83,7 +79,7 @@ const ProfilePage = () => {
 					В этом разделе вы можете изменить свои персональные данные
 				</div>
 			</nav>
-			<section className={styles.forms} style={{ width: '100%' }}>
+			<section className={styles.formsSection}>
 				<Outlet />
 				<form onSubmit={handleSubmit} className={styles.fields}>
 					<div className="text text_type_main-large mb-6">Профиль пользователя</div>
@@ -117,8 +113,8 @@ const ProfilePage = () => {
 						onPointerEnterCapture={() => {}}
 						onPointerLeaveCapture={() => {}}
 					/>
-					{error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-					<div style={{ display: 'flex', gap: 12 }}>
+					{error && <div className={styles.error}>{error}</div>}
+					<div className={styles.buttonsContainer}>
 						<Button htmlType="submit" type="primary" size="medium" disabled={!editMode || loading}>
 							Сохранить
 						</Button>

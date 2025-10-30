@@ -2,19 +2,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../services/store';
+import { useAppDispatch, useAppSelector } from '../services/hooks';
 import { loginUserThunk } from '../services/userThunks';
-import { RootState } from '../services/store';
-import styles from './forms.module.css';
+import formStyles from './forms.module.css';
+import styles from './login.module.css';
 
 
 const LoginPage = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { isAuth, loading, error } = useSelector((state: RootState) => state.user);
+	const { isAuth, loading, error } = useAppSelector(state => state.user);
 
 	useEffect(() => {
 		if (isAuth) {
@@ -28,9 +27,9 @@ const LoginPage = () => {
 	};
 
 	return (
-		<div className={styles.forms}>
+		<div className={formStyles.forms}>
 			<h2 className="text text_type_main-medium mb-6">Вход</h2>
-			<form onSubmit={handleSubmit} className={styles.fields}>
+			<form onSubmit={handleSubmit} className={formStyles.fields}>
 				<Input
 					type="email"
 					placeholder="E-mail"
@@ -49,7 +48,7 @@ const LoginPage = () => {
 					onPointerEnterCapture={() => {}}
 					onPointerLeaveCapture={() => {}}
 				/>
-				{error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
+				{error && <div className={styles.error}>{error}</div>}
 				<Button htmlType="submit" type="primary" size="medium" extraClass="mb-10" disabled={loading}>
 					{loading ? 'Вход...' : 'Войти'}
 				</Button>

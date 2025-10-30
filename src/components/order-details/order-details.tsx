@@ -1,15 +1,14 @@
 import React from 'react';
 import styles from './order-details.module.css';
 import { CheckMarkIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../services/store';
+import { useAppSelector } from '../../services/hooks';
 
 const OrderDetails: React.FC = () => {
-  const { number, loading, error } = useSelector((state: RootState) => state.order);
+  const { number, loading, error } = useAppSelector(state => state.order);
   return (
     <div className={styles.order}>
       {loading && <p className="text text_type_main-medium">Оформляем заказ...</p>}
-      {error && <p className="text text_type_main-medium" style={{color: 'red'}}>{error}</p>}
+      {error && <p className={`text text_type_main-medium ${styles.error}`}>{error}</p>}
       {number && !loading && !error && (
         <>
           <p className="text text_type_digits-large number">{number}</p>

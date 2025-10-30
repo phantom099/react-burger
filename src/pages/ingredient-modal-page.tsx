@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../services/store';
+import { useAppSelector } from '../services/hooks';
+
 import Modal from '../components/modal/modal';
 import IngredientDetails from '../components/ingredient-details/ingredient-details';
 
@@ -9,7 +9,7 @@ export const IngredientModalPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
+  const ingredients = useAppSelector(state => state.ingredients.items);
   const ingredient = ingredients.find((item) => item._id === id);
 
   const handleClose = () => {

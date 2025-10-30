@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  max-width: 900px;
+  margin: 40px auto;
+  min-height: 400px;
+}
+
+.navigation {
+  min-width: 220px;
+  margin-right: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.navLink {
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 8px;
+  background: #222;
+}
+
+.formsSection {
+  width: 100%;
+}
+
+.error {
+  color: red;
+  margin-bottom: 12px;
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 12px;
+}

@@ -5,18 +5,18 @@ import { TIngredient } from '../../types/ingredient';
 import styles from './burger-constructor.module.css';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { addIngredient, removeIngredient, reorderIngredients } from '../../services/constructorSlice';
-import { AppDispatch, RootState } from '../../services/store';
+
 import { createOrder } from '../../services/orderSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 const BurgerConstructor: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch<AppDispatch>();
-  const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
-  const isAuth = useSelector((state: RootState) => state.user.isAuth);
+  const dispatch = useAppDispatch();
+  const { bun, mains } = useAppSelector(state => state.constructorBurger);
+  const isAuth = useAppSelector(state => state.user.isAuth);
   const sectionRef = useRef<HTMLElement>(null);
 
   const total = React.useMemo(() => {
@@ -113,8 +113,8 @@ const BurgerConstructor: React.FC = () => {
       ref={sectionRef}
     >
       {bun ? (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ width: 'calc(24px + 0.5em)', height: 24, display: 'inline-block' }} />
+        <div className={styles.bunContainer}>
+          <span className={styles.dragIcon} />
           <ConstructorElement 
             type="top" 
             isLocked 
@@ -124,7 +124,7 @@ const BurgerConstructor: React.FC = () => {
           />
         </div>
       ) : (
-        <p className="text text_type_main-default" style={{ textAlign: 'center', margin: '10px 0' }}>
+        <p className={`text text_type_main-default ${styles.bunPlaceholder}`}>
           Пожалуйста, перенесите сюда булку
         </p>
       )}
@@ -141,7 +141,8 @@ const BurgerConstructor: React.FC = () => {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          style={{ display: 'flex', alignItems: 'center', ...provided.draggableProps.style }}
+                          className={styles.constructorItem}
+                          style={provided.draggableProps.style}
                         >
                           <span {...provided.dragHandleProps}>
                             <DragIcon type="primary" className={styles.drag_button}/>
@@ -168,8 +169,8 @@ const BurgerConstructor: React.FC = () => {
       </DragDropContext>
       
       {bun && (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ width: 'calc(24px + 0.5em)', height: 24, display: 'inline-block' }} />
+        <div className={styles.bunContainer}>
+          <span className={styles.dragIcon} />
           <ConstructorElement 
             type="bottom" 
             isLocked 

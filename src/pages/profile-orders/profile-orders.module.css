@@ -75,10 +75,13 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
-  position: relative;
+  position: absolute;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   background: #1a1a1a;
+  z-index: var(--z-index);
+  left: var(--offset);
 }
+
 .ingredient_more {
   width: 40px;
   height: 40px;
@@ -89,14 +92,24 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  position: relative;
-  z-index: 5;
+  position: absolute;
+  z-index: 1;
+  left: var(--offset);
 }
+
 .card_price {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 1.1em;
+}
+
+.error {
+  color: red;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(255, 0, 0, 0.1);
+  margin-bottom: 16px;
 }
 /* Основной layout */
 

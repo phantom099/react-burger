@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../services/store';
+import { useAppSelector } from '../services/hooks';
+
 import Modal from '../components/modal/modal';
 import OrderDetails from '../components/order-details/order-details';
 import FeedOrderPage from './feed-order-page';
@@ -10,9 +10,9 @@ export const OrderModalPage = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const orderNumber = useSelector((state: RootState) => state.order.number);
-  const loading = useSelector((state: RootState) => state.order.loading);
-  const error = useSelector((state: RootState) => state.order.error);
+  const orderNumber = useAppSelector(state => state.order.number);
+  const loading = useAppSelector(state => state.order.loading);
+  const error = useAppSelector(state => state.order.error);
 
   // If URL contains an id (feed order), render feed order view.
   if (id) {

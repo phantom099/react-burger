@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from './services/store';
+import { useAppDispatch } from './services/hooks';
 
 // Components
 import AppHeader from './components/app-header/app-header';
@@ -32,7 +31,7 @@ import styles from './app.module.css';
 
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const background = location.state?.background;
 

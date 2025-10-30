@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../services/hooks';
 import { clearUser } from '../services/userSlice';
 import { isTokenExpired } from '../utils/jwt';
 
@@ -11,7 +11,7 @@ interface ProtectedRouteElementProps {
 
 const ProtectedRouteElement: React.FC<ProtectedRouteElementProps> = ({ onlyUnAuth = false, children }) => {
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [authed, setAuthed] = React.useState<boolean>(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return false;

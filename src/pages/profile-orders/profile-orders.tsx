@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../services/store';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { wsConnect as wsProfileConnect, wsDisconnect as wsProfileDisconnect } from '../../services/profileOrdersSlice';
+import { TOrder } from '../../types/order';
+import { TIngredient } from '../../types/ingredient';
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { NavLink, useLocation } from "react-router-dom";
 import { getAccessToken } from '../../utils/api';
@@ -10,9 +11,9 @@ import { Link } from 'react-router-dom';
 import styles from './profile-orders.module.css';
 
 const ProfileOrdersPage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { orders, wsConnected, error } = useSelector((state: RootState) => state.profileOrders);
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
+  const dispatch = useAppDispatch();
+  const { orders, wsConnected, error } = useAppSelector(state => state.profileOrders);
+  const ingredients = useAppSelector(state => state.ingredients.items);
   const location = useLocation();
 
   useEffect(() => {
@@ -37,9 +38,9 @@ const ProfileOrdersPage: React.FC = () => {
       </aside>
       <main className={styles.main}>
         {!wsConnected && <div>Загрузка заказов...</div>}
-        {error && <div style={{ color: 'red' }}>{error}</div>}
+        {error && <div className={styles.error}>{error}</div>}
         <ul className={styles.list}>
-          {orders.map(order => (
+          {orders.map((order: TOrder) => (
             <li key={order._id} className={styles.card}>
               <Link to={`/profile/orders/${order._id}`} state={{ background: location }} className={styles.link}>
                 <div className={styles.card_header}>
@@ -60,8 +61,8 @@ const ProfileOrdersPage: React.FC = () => {
                 </div>
                 <div className={styles.card_footer}>
                   <div className={styles.card_ingredients}>
-                    {order.ingredients.slice(0, 5).map((id, idx) => {
-                      const ingredient = ingredients.find(i => i._id === id);
+                    {order.ingredients.slice(0, 5).map((id: string, idx: number) => {
+                      const ingredient = ingredients.find((i: TIngredient) => i._id === id);
                       if (!ingredient) return null;
                       return (
                         <img
@@ -69,20 +70,23 @@ const ProfileOrdersPage: React.FC = () => {
                           src={ingredient.image}
                           alt={ingredient.name}
                           className={styles.ingredient_img}
-                          style={{ left: idx * -12, zIndex: 10 - idx }}
+                          style={{ '--offset': `${idx * -12}px`, '--z-index': `${10 - idx}` } as React.CSSProperties}
                         />
                       );
                     })}
                     {order.ingredients.length > 5 && (
-                      <span className={styles.ingredient_more} style={{ left: 5 * -12 }}>
+                      <span 
+                        className={styles.ingredient_more}
+                        style={{ '--offset': `${5 * -12}px` } as React.CSSProperties}
+                      >
                         +{order.ingredients.length - 5}
                       </span>
                     )}
                   </div>
                   <div className={styles.card_price}>
                     <span className="text text_type_digits-default">
-                      {order.ingredients.reduce((sum, id) => {
-                        const ingredient = ingredients.find(i => i._id === id);
+                      {order.ingredients.reduce((sum: number, id: string) => {
+                        const ingredient = ingredients.find((i: TIngredient) => i._id === id);
                         return sum + (ingredient ? ingredient.price : 0);
                       }, 0)}
                     </span>

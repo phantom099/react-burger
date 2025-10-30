@@ -1,13 +1,16 @@
-.card {
+.bicard {
     background-color: #1c1c21;
     border-radius: 8px;
     padding: 16px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s ease;
+    position: relative;
+    border: none;
+    width: 100%;
 }
 
-.card:hover {
+.bicard:hover {
     transform: scale(1.02);
 }
 
@@ -17,4 +20,27 @@
     align-items: center;
     gap: 4px;
     margin: 8px 0;
+}
+
+.cardContainer {
+    opacity: 1;
+}
+
+.cardContainer.isDragging {
+    opacity: 0.5;
+}
+
+.selected_pos {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #4C4CFF;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
 }

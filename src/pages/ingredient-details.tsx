@@ -1,16 +1,17 @@
 
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "../services/hooks";
 import IngredientDetails from "../components/ingredient-details/ingredient-details";
-import { RootState } from "../services/store";
+
+import styles from './ingredient-details.module.css';
 
 const IngredientDetailsPage = () => {
 	const { id } = useParams<{ id: string }>();
-	const ingredients = useSelector((state: RootState) => state.ingredients.items || []);
+	const ingredients = useAppSelector(state => state.ingredients.items || []);
 	const ingredient = ingredients.find((item) => item._id === id);
 	if (!ingredient) {
-		return <div style={{ padding: 32 }}>Ингредиент не найден</div>;
+		return <div className={styles.notFoundMessage}>Ингредиент не найден</div>;
 	}
 	return <IngredientDetails ingredient={ingredient} />;
 };

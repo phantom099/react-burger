@@ -1,0 +1,32 @@
+.register {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 12px;
+}
+
+.localError {
+  color: orange;
+  margin-bottom: 12px;
+}
+
+.form {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}

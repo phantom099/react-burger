@@ -2,36 +2,37 @@
 
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../services/store';
+import { useAppSelector } from '../../services/hooks';
+import { TOrder } from '../../types/order';
+import { TIngredient } from '../../types/ingredient';
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import styles from './profile-orders.module.css';
+import styles from './order-details.module.css';
 
 const ProfileOrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const order = useSelector((state: RootState) => state.profileOrders.orders.find(o => o._id === id));
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
+  const order = useAppSelector(state => state.profileOrders.orders.find((o: TOrder) => o._id === id));
+  const ingredients = useAppSelector(state => state.ingredients.items);
 
   // Always call hooks at the top level
   const ingredientMap = useMemo(() => {
     if (!order) return {};
-    return order.ingredients.reduce<Record<string, number>>((acc, id) => {
-      acc[id] = (acc[id] || 0) + 1;
+    return order.ingredients.reduce<Record<string, number>>((acc, ingId: string) => {
+      acc[ingId] = (acc[ingId] || 0) + 1;
       return acc;
     }, {});
   }, [order]);
 
   const orderIngredients = useMemo(() => {
     return Object.entries(ingredientMap)
-      .map(([id, count]) => {
-        const ingredient = ingredients.find(i => i._id === id);
+      .map(([ingId, count]) => {
+        const ingredient = ingredients.find((i: TIngredient) => i._id === ingId);
         return ingredient ? { ...ingredient, count } : null;
       })
-      .filter(Boolean);
+      .filter((x): x is TIngredient & { count: number } => x !== null);
   }, [ingredientMap, ingredients]);
 
   const totalPrice = useMemo(() => {
-    return orderIngredients.reduce((sum, i) => sum + (i!.price * (i!.count || 1)), 0);
+    return orderIngredients.reduce((sum: number, i) => sum + (i.price * (i.count || 1)), 0);
   }, [orderIngredients]);
 
   if (!order) return <div className={styles.wrapper}>Заказ не найден</div>;
@@ -59,29 +60,29 @@ const ProfileOrderDetails: React.FC = () => {
   }
 
   return (
-    <div className={styles.wrapper} style={{ display: "block" }}>
+    <div className={styles.wrapper}>
       <div>
-        <h2 className="text text_type_main-large mb-6" style={{ display: "block" }}>#{order.number}</h2>
+        <h2 className={`text text_type_main-large mb-6 ${styles.orderNumber}`}>#{order.number}</h2>
       </div>
-      <div className={styles.card} style={{ boxShadow: "none", padding: 0 }}>
+      <div className={styles.card}>
         <div className="text text_type_main-medium mb-2">{order.name}</div>
         <div className={`text text_type_main-default mb-4 ${statusClass}`}>{statusText}</div>
         <div className="mb-6">
           <h3 className="text text_type_main-medium mb-2">Состав:</h3>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          <ul className={styles.ingredientsList}>
             {orderIngredients.map(i => (
-              <li key={i!._id} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                <img src={i!.image} alt={i!.name} style={{ width: 48, height: 48, borderRadius: '50%', marginRight: 12, border: '1px solid #eee' }} />
-                <span className="text text_type_main-default" style={{ flex: 1 }}>{i!.name}</span>
-                <span className="text text_type_digits-default" style={{ marginRight: 8 }}>{i!.count} x {i!.price}</span>
+              <li key={i!._id} className={styles.ingredientItem}>
+                <img src={i!.image} alt={i!.name} className={styles.ingredientImage} />
+                <span className={`text text_type_main-default ${styles.ingredientName}`}>{i!.name}</span>
+                <span className={`text text_type_digits-default ${styles.ingredientPrice}`}>{i!.count} x {i!.price}</span>
                 <CurrencyIcon type="primary" />
               </li>
             ))}
           </ul>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className={styles.footer}>
           <span className="text text_type_main-default text_color_inactive">{new Date(order.createdAt).toLocaleString()}</span>
-          <span className="text text_type_digits-large" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 32 }}>
+          <span className={`text text_type_digits-large ${styles.totalPrice}`}>
             {totalPrice}
             <CurrencyIcon type="primary" />
           </span>

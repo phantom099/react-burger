@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../utils/types';
 import { useDrag } from 'react-dnd';
-import styles from'./burger-ingredients.module.css';
+import styles from './burger-ingredients.module.css';
 
 type Props = {
   ingredients: TIngredient[];
@@ -37,17 +37,17 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredien
   dragRef(internalRef);
 
   return (
-    <div ref={internalRef} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)} style={{ position: 'relative' }}>
-        <img className="bi-card__img" src={ingredient.image} alt={ingredient.name} />
+    <div ref={internalRef} className={`${styles.draggable}`} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)}>
+        <img src={ingredient.image} alt={ingredient.name} />
         {usedCounts[ingredient._id] && (
           <span className={styles.selected_pos}>{usedCounts[ingredient._id] || 0}</span>
         )}
-        <div className="bi-card__price">
-          <span className="text text_type_digits-default">{ingredient.price}</span>
+        <div className="text text_type_digits-default mt-1 mb-1">
+          <span className="mr-2">{ingredient.price}</span>
           <CurrencyIcon type="primary" />
         </div>
-        <p className="text text_type_main-default bi-card__name">{ingredient.name}</p>
+        <p className="text text_type_main-default">{ingredient.name}</p>
       </button>
     </div>
   );

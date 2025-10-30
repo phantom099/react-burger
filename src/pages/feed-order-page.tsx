@@ -1,29 +1,26 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../services/store';
+import { useAppSelector, useAppDispatch } from '../services/hooks';
 import { wsConnect } from '../services/feedSlice';
-import { fetchIngredients } from '../services/ingredientsSlice';
+import { TOrder } from '../types/order';
+import { TIngredient } from '../types/ingredient';
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import styles from './feed.module.css';
+import styles from './feed-order-page.module.css';
 
 const FeedOrderPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  const dispatch = useDispatch<AppDispatch>();
-  const { orders, wsConnected, error } = useSelector((state: RootState) => state.feed);
-  const ingredients = useSelector((state: RootState) => state.ingredients.items);
-  const ingredientsLoading = useSelector((state: RootState) => state.ingredients.loading);
-  const order = orders.find(o => o._id === id);
+  const dispatch = useAppDispatch();
+  const { orders, wsConnected, error } = useAppSelector(state => state.feed);
+  const ingredients = useAppSelector(state => state.ingredients.items);
+  const ingredientsLoading = useAppSelector(state => state.ingredients.loading);
+  const order = orders.find((o: TOrder) => o._id === id);
 
   useEffect(() => {
     if (!wsConnected) {
       dispatch(wsConnect());
     }
-    // Грузим ингредиенты если их нет
-    if (!ingredients || ingredients.length === 0) {
-      dispatch(fetchIngredients());
-    }
+    // Ingredients are loaded once in App; don't fetch here to avoid duplicates
     // Не закрываем ws при анмаунте, чтобы соединение оставалось для других страниц
     // eslint-disable-next-line
   }, [dispatch, wsConnected, ingredients]);
@@ -36,13 +33,13 @@ const FeedOrderPage: React.FC = () => {
     return <div className={styles.wrapper}>Загрузка заказа...</div>;
   }
   if (error) {
-    return <div className={styles.wrapper} style={{ color: 'red' }}>{error}</div>;
+    return <div className={`${styles.wrapper} ${styles.error}`}>{error}</div>;
   }
   if (!order) {
     return <div className={styles.wrapper}>Заказ не найден</div>;
   }
 
-  const ingredientMap = order.ingredients.reduce<Record<string, number>>((acc, id) => {
+  const ingredientMap = order.ingredients.reduce<Record<string, number>>((acc: Record<string, number>, id: string) => {
     acc[id] = (acc[id] || 0) + 1;
     return acc;
   }, {});
@@ -78,38 +75,38 @@ const FeedOrderPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.wrapper} style={{ width: '100%' }}>
-      <div className={styles.card} style={{ background: "transparent" }}>
-        <h2 className="text text_type_main-large mb-6" style={{ textAlign: "center" }}>#{order.number}</h2>
+    <div className={styles.wrapper}>
+      <div className={styles.card}>
+        <h2 className={`text text_type_main-large mb-6 ${styles.number}`}>#{order.number}</h2>
         <div className="text text_type_main-medium mb-2">{order.name}</div>
-  <div className={`text text_type_main-default mb-4 ${statusClass}`}>{statusText}</div>
-  <div className="mb-6" style={{  maxHeight: 300, overflowY: "auto" }}>
+        <div className={`text text_type_main-default mb-4 ${statusClass}`}>{statusText}</div>
+        <div className={`mb-6 ${styles.ingredientsList}`}>
           <h3 className="text text_type_main-medium mb-2">Состав:</h3>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {order.ingredients.map((id, idx) => {
-              const ingredient = ingredients.find(i => i._id === id);
+          <ul className={styles.list}>
+            {order.ingredients.map((id: string, idx: number) => {
+              const ingredient = ingredients.find((i: TIngredient) => i._id === id);
               if (!ingredient) {
                 return (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                    <span className="text text_type_main-default" style={{ flex: 1, color: 'red' }}>Ингредиент не найден</span>
+                  <li key={idx} className={styles.listItem}>
+                    <span className={`text text_type_main-default ${styles.errorText}`}>Ингредиент не найден</span>
                   </li>
                 );
               }
-              const count = order.ingredients.filter(x => x === id).length;
+              const count = order.ingredients.filter((x: string) => x === id).length;
               return (
-                <li key={id + idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                  <img src={ingredient.image} alt={ingredient.name} style={{ width: 48, height: 48, borderRadius: '50%', marginRight: 12, border: '1px solid #eee' }} />
-                  <span className="text text_type_main-default" style={{ flex: 1 }}>{ingredient.name}</span>
-                  <span className="text text_type_digits-default" style={{ marginRight: 8 }}>{count} x {ingredient.price}</span>
+                <li key={id + idx} className={styles.listItem}>
+                  <img src={ingredient.image} alt={ingredient.name} className={styles.ingredientImage} />
+                  <span className={`text text_type_main-default ${styles.ingredientName}`}>{ingredient.name}</span>
+                  <span className={`text text_type_digits-default ${styles.price}`}>{count} x {ingredient.price}</span>
                   <CurrencyIcon type="primary" />
                 </li>
               ); 
             })}
           </ul>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className={styles.footer}>
           <span className="text text_type_main-default text_color_inactive">{new Date(order.createdAt).toLocaleString()}</span>
-          <span className="text text_type_digits-large" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '42px' }}>
+          <span className={`text text_type_digits-large ${styles.totalPrice}`}>
             {totalPrice}
             <CurrencyIcon type="primary" />
           </span>

@@ -2,20 +2,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../services/store';
+import { useAppDispatch, useAppSelector } from '../services/hooks';
 import { registerUserThunk } from '../services/userThunks';
-import { RootState } from '../services/store';
-import styles from './forms.module.css';
+import styles from './register.module.css';
 
 const RegisterPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [localError, setLocalError] = useState<string | null>(null);
-	const dispatch = useDispatch<AppDispatch>();
+	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { isAuth, loading, error } = useSelector((state: RootState) => state.user);
+	const { isAuth, loading, error } = useAppSelector(state => state.user);
 
 	React.useEffect(() => {
 		if (isAuth) {
@@ -77,8 +75,8 @@ const RegisterPage = () => {
 					onPointerEnterCapture={() => {}}
 					onPointerLeaveCapture={() => {}}
 				/>
-				{localError && <div style={{ color: 'orange', marginBottom: 12 }}>{localError}</div>}
-				{error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
+				{localError && <div className={styles.localError}>{localError}</div>}
+				{error && <div className={styles.error}>{error}</div>}
 				<Button htmlType="submit" type="primary" size="medium" extraClass="mb-10" disabled={loading}>
 					{loading ? 'Регистрация...' : 'Зарегистрироваться'}
 				</Button>
