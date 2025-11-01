@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../services/hooks';
 import { wsConnect, wsDisconnect } from '../services/feedSlice';
@@ -13,6 +13,8 @@ const FeedPage: React.FC = () => {
   const { orders, total, totalToday, wsConnected, error } = useAppSelector(state => state.feed);
   const ingredients = useAppSelector(state => state.ingredients.items);
   const location = useLocation();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [visibleIcons, setVisibleIcons] = useState<number>(5);
 
   useEffect(() => {
     // Debug: log that we're about to connect to feed WS
@@ -23,6 +25,27 @@ const FeedPage: React.FC = () => {
       dispatch(wsDisconnect());
     };
   }, [dispatch]);
+
+  // compute how many icons can fit into the ingredients container
+  useEffect(() => {
+    const compute = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const style = getComputedStyle(el);
+      const paddingLeft = parseFloat(style.paddingLeft) || 0;
+      const paddingRight = parseFloat(style.paddingRight) || 0;
+      const available = el.clientWidth - paddingLeft - paddingRight;
+      const ICON_SIZE = 40; // px
+      const GAP = 8; // px (approximate)
+      const per = ICON_SIZE + GAP;
+      const count = Math.max(1, Math.floor(available / per));
+      setVisibleIcons(count);
+    };
+
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, [orders, ingredients]);
 
   return (
     <div className={styles.wrapper}>
@@ -47,25 +70,45 @@ const FeedPage: React.FC = () => {
                   </div>
                   <div className={`text text_type_main-medium ${styles.orderName}`}>{order.name}</div>
                   <div className={styles.orderFooter}>
-                    <div className={styles.ingredientsContainer}>
-                      {order.ingredients.slice(0, 5).map((id: string, idx: number) => {
-                        const ingredient = ingredients.find((i: TIngredient) => i._id === id);
-                        if (!ingredient) return null;
-                        return (
-                          <img
-                            key={idx}
-                            src={ingredient.image}
-                            alt={ingredient.name}
-                            className={styles.ingredientImage}
-                            style={{ '--offset': `${idx * -12}px`, '--z-index': `${10 - idx}` } as React.CSSProperties}
-                          />
-                        );
-                      })}
-                      {order.ingredients.length > 5 && (
-                        <span className={styles.moreIngredients} style={{ '--offset': `${5 * -12}px`, '--z-index': '5' } as React.CSSProperties}>
-                          +{order.ingredients.length - 5}
-                        </span>
-                      )}
+                    <div className={styles.ingredientsContainer} ref={containerRef}>
+                      {
+                        (() => {
+                          const total = order.ingredients.length;
+                          // if more than can fit, reserve last slot for +N
+                          if (total > visibleIcons) {
+                            const showCount = Math.max(1, visibleIcons - 1);
+                            return (
+                              <>
+                                {order.ingredients.slice(0, showCount).map((id: string, idx: number) => {
+                                  const ingredient = ingredients.find((i: TIngredient) => i._id === id);
+                                  if (!ingredient) return null;
+                                  return (
+                                    <img
+                                      key={id + idx}
+                                      src={ingredient.image}
+                                      alt={ingredient.name}
+                                      className={styles.ingredientImage}
+                                    />
+                                  );
+                                })}
+                                <span className={styles.moreIngredients}>+{total - showCount}</span>
+                              </>
+                            );
+                          }
+                          return order.ingredients.map((id: string, idx: number) => {
+                            const ingredient = ingredients.find((i: TIngredient) => i._id === id);
+                            if (!ingredient) return null;
+                            return (
+                              <img
+                                key={id + idx}
+                                src={ingredient.image}
+                                alt={ingredient.name}
+                                className={styles.ingredientImage}
+                              />
+                            );
+                          });
+                        })()
+                      }
                     </div>
                     <div className={styles.priceContainer}>
                       <span className="text text_type_digits-default">

@@ -1,0 +1,60 @@
+/* Общие стили для страницы деталей заказа */
+.wrapper {
+  max-width: 600px;
+  margin: 40px auto;
+  border-radius: 16px;
+  background: #1c1c21;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 32px 24px;
+}
+.orderNumber {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.card {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+.ingredientsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.ingredientItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.ingredientImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background: #1a1a1a;
+}
+.ingredientName {
+  flex: 1;
+}
+.ingredientPrice {
+  min-width: 80px;
+  text-align: right;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+.totalPrice {
+  font-size: 1.5em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

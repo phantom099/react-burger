@@ -79,8 +79,11 @@
 
 .ingredientsContainer {
   display: flex;
-  position: relative;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
   min-height: 40px;
+  overflow: hidden;
 }
 
 .ingredientImage {
@@ -89,25 +92,23 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
-  position: absolute;
   background-color: #1a1a1a;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transform: translateX(var(--offset));
-  z-index: var(--z-index);
+  flex: 0 0 auto;
+  transform: translateX(var(--offset) );
 }
 
 .moreIngredients {
-  width: 40px;
+  min-width: 40px;
   height: 40px;
   border-radius: 50%;
   background: rgba(28, 28, 33, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  transform: translateX(var(--offset));
-  z-index: var(--z-index);
   color: #fff;
+  padding: 0 6px;
+  flex: 0 0 auto;
 }
 
 .priceContainer {

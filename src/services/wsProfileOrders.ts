@@ -16,7 +16,7 @@ export const connectProfileOrdersWS = (dispatch: AppDispatch) => {
   }
   // accessToken должен быть без Bearer
   const cleanToken = token.replace('Bearer ', '');
-  socket = new WebSocket(`wss://${API_BASE}/orders?token=${cleanToken}`);
+  socket = new WebSocket(`wss://${API_BASE}?token=${cleanToken}`);
 
   socket.onopen = () => {
     dispatch(wsConnect());

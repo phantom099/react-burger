@@ -73,17 +73,11 @@ function App() {
           
           <Route path="/profile/*" element={
             <ProtectedRouteElement>
-              <ProfilePage />
-            </ProtectedRouteElement>
-          } />
-          <Route path="/profile/orders" element={
-            <ProtectedRouteElement>
-              <ProfileOrdersPage />
-            </ProtectedRouteElement>
-          } />
-          <Route path="/profile/orders/:id" element={
-            <ProtectedRouteElement>
-              <ProfileOrderDetails />
+              <Routes>
+                <Route index element={<ProfilePage />} />
+                <Route path="orders" element={<ProfileOrdersPage />} />
+                <Route path="orders/:id" element={<ProfileOrderDetails />} />
+              </Routes>
             </ProtectedRouteElement>
           } />
           

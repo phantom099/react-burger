@@ -1,19 +1,26 @@
-
-
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../services/hooks';
+import { useAppSelector, useAppDispatch } from '../../services/hooks';
+import { wsConnect as wsProfileConnect } from '../../services/profileOrdersSlice';
 import { TOrder } from '../../types/order';
 import { TIngredient } from '../../types/ingredient';
 import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import styles from './order-details.module.css';
+import styles from '../../pages/feed-order-details.module.css';
 
 const ProfileOrderDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const order = useAppSelector(state => state.profileOrders.orders.find((o: TOrder) => o._id === id));
+  const dispatch = useAppDispatch();
+  const { orders, wsConnected } = useAppSelector(state => state.profileOrders);
+  const order = orders.find((o: TOrder) => o._id === id);
   const ingredients = useAppSelector(state => state.ingredients.items);
 
-  // Always call hooks at the top level
+  useEffect(() => {
+    if (!wsConnected) {
+      dispatch(wsProfileConnect());
+    }
+    // No need to disconnect on unmount as the connection is shared
+  }, [wsConnected, dispatch]);
+
   const ingredientMap = useMemo(() => {
     if (!order) return {};
     return order.ingredients.reduce<Record<string, number>>((acc, ingId: string) => {
@@ -35,38 +42,38 @@ const ProfileOrderDetails: React.FC = () => {
     return orderIngredients.reduce((sum: number, i) => sum + (i.price * (i.count || 1)), 0);
   }, [orderIngredients]);
 
-  if (!order) return <div className={styles.wrapper}>Заказ не найден</div>;
+  const { loading: ingredientsLoading } = useAppSelector(state => state.ingredients);
 
-  let statusText = '';
-  let statusClass = 'text_color_inactive';
-  switch (order.status) {
-    case 'created':
-      statusText = 'создан';
-      break;
-    case 'pending':
-      statusText = 'в готовке';
-      statusClass = 'text_color_warning';
-      break;
-    case 'done':
-      statusText = 'готов';
-      statusClass = 'text_color_success';
-      break;
-    case 'cancelled':
-      statusText = 'отменён';
-      statusClass = 'text_color_error';
-      break;
-    default:
-      statusText = order.status;
+  if (ingredientsLoading) {
+    return <div className={styles.wrapper}>Загрузка ингредиентов...</div>;
   }
+
+  if (!wsConnected) {
+    return <div className={styles.wrapper}>Подключение к серверу...</div>;
+  }
+
+  if (!order) {
+    return <div className={styles.wrapper}>Заказ не найден</div>;
+  }
+
+  if (!ingredients.length) {
+    return <div className={styles.wrapper}>Ошибка загрузки ингредиентов</div>;
+  }
+
+  const statusMap: Record<string, string> = {
+    done: 'Выполнен',
+    pending: 'Готовится',
+    created: 'Создан',
+    cancelled: 'Отменён',
+  };
+  const statusText = statusMap[order.status] || order.status;
 
   return (
     <div className={styles.wrapper}>
-      <div>
-        <h2 className={`text text_type_main-large mb-6 ${styles.orderNumber}`}>#{order.number}</h2>
-      </div>
+      <h2 className={`text text_type_main-large mb-6`}>#{order.number}</h2>
       <div className={styles.card}>
         <div className="text text_type_main-medium mb-2">{order.name}</div>
-        <div className={`text text_type_main-default mb-4 ${statusClass}`}>{statusText}</div>
+        <div className={`text text_type_main-default mb-4 ${styles.status} ${order.status === 'done' ? styles.done : ''}`}>{statusText}</div>
         <div className="mb-6">
           <h3 className="text text_type_main-medium mb-2">Состав:</h3>
           <ul className={styles.ingredientsList}>
@@ -74,7 +81,7 @@ const ProfileOrderDetails: React.FC = () => {
               <li key={i!._id} className={styles.ingredientItem}>
                 <img src={i!.image} alt={i!.name} className={styles.ingredientImage} />
                 <span className={`text text_type_main-default ${styles.ingredientName}`}>{i!.name}</span>
-                <span className={`text text_type_digits-default ${styles.ingredientPrice}`}>{i!.count} x {i!.price}</span>
+                <span className={`text text_type_digits-default ${styles.price}`}>{i!.count} x {i!.price}</span>
                 <CurrencyIcon type="primary" />
               </li>
             ))}

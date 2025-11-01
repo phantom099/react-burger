@@ -70,16 +70,15 @@
   min-height: 40px;
 }
 .ingredient_img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fff;
-  position: absolute;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  background: #1a1a1a;
-  z-index: var(--z-index);
-  left: var(--offset);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    background-color: #1a1a1a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    flex: 0 0 auto;
+    transform: translateX(var(--offset));
 }
 
 .ingredient_more {
