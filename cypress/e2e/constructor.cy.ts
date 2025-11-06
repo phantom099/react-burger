@@ -1,38 +1,36 @@
 describe("Constructor drag-and-drop flow", () => {
+  const cBurger = `[class^="burger-ingredients_draggable"]`;
+  const cbConst = '[class*="constburger_constructor"]';
+
   beforeEach(() => {
     cy.intercept("GET", "**/ingredients");
     cy.visit("/");
-    cy.get('[class^="burger-ingredients_draggable"]', { timeout: 10000 }).should("exist");
+    cy.get(cBurger, { timeout: 10000 }).should("exist");
   });
 
   it("user can drag bun and main to constructor and create order", () => {
-    cy.get('[class^="burger-ingredients_draggable"]').contains("булка").as("bun");
-    cy.get('[class^="burger-ingredients_draggable"]').not(':contains("булка")').first().as("main");
+    
+    cy.get(cBurger).contains("булка").as("bun");
+    cy.get(cBurger).not(':contains("булка")').first().as("main");
 
     const dataTransfer = new DataTransfer();
 
     cy.get("@bun").trigger("dragstart", { dataTransfer });
-    cy.get(
-      '[class^="burger-constructor_constburger_constructor__TXPjr"]'
-    ).trigger("drop", {
+    cy.get(cbConst).trigger("drop", {
       dataTransfer,
     });
 
     cy.get("@main").trigger("dragstart", { dataTransfer });
-    cy.get(
-      '[class^="burger-constructor_constburger_constructor__TXPjr"]'
-    ).trigger("drop", {
+    cy.get(cbConst).trigger("drop", {
       dataTransfer,
     });
 
     cy.get("@main").trigger("dragstart", { dataTransfer });
-    cy.get(
-      '[class^="burger-constructor_constburger_constructor__TXPjr"]'
-    ).trigger("drop", {
+    cy.get(cbConst).trigger("drop", {
       dataTransfer,
     });
 
-    cy.get('[class^="burger-constructor_constructorItem__pBQwl"]').should(
+    cy.get('[class*="constructorItem"]').should(
       "have.length.at.least",
       2
     );
