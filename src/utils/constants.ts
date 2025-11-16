@@ -1,1 +1,1 @@
-export const API_BASE = "https://norma.nomoreparties.space/api";
+export const API_BASE = "https://norma.education-services.ru/api";

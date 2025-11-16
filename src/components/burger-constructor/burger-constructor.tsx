@@ -1,21 +1,22 @@
 import React, { useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ConstructorElement, CurrencyIcon, Button, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../types/ingredient';
 import styles from './burger-constructor.module.css';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { addIngredient, removeIngredient, reorderIngredients } from '../../services/constructorSlice';
-import { AppDispatch, RootState } from '../../services/store';
+
+import { createOrder } from '../../services/orderSlice';
 import { v4 as uuidv4 } from 'uuid';
 
-interface Props {
-  onOrder: () => void;
-}
-
-const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { bun, mains } = useSelector((state: RootState) => state.constructorBurger);
+const BurgerConstructor: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const { bun, mains } = useAppSelector(state => state.constructorBurger);
+  const isAuth = useAppSelector(state => state.user.isAuth);
   const sectionRef = useRef<HTMLElement>(null);
 
   const total = React.useMemo(() => {
@@ -51,7 +52,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
     }
   };
 
-  const [{ isOver }, dropRef] = useDrop({
+  const [, dropRef] = useDrop({
     accept: 'ingredient',
     drop: (item: TIngredient) => {
       try {
@@ -75,14 +76,45 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
 
   dropRef(sectionRef);
 
+
+  const handleOrderClick = async () => {
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
+    // Собираем массив id ингредиентов: сначала булка (верх), потом начинки, потом булка (низ)
+    if (!bun) return;
+    const ingredientIds = [bun._id, ...(Array.isArray(mains) ? mains.map(i => i._id) : []), bun._id];
+    try {
+      // Immediately open the order modal (background = current location)
+      // so user sees the modal while order is being processed.
+      // eslint-disable-next-line no-console
+      console.debug('[Constructor] opening order modal and creating order, ids:', ingredientIds);
+      navigate('/order', { state: { background: location } });
+
+      // Fire the async createOrder but keep the modal open during processing
+      const result = await dispatch(createOrder(ingredientIds));
+      // eslint-disable-next-line no-console
+      console.debug('[Constructor] createOrder result:', result);
+      if ((result as any).type && (result as any).type.endsWith('/rejected')) {
+        // Log if failed; OrderModalPage will read error from store and display
+        // eslint-disable-next-line no-console
+        console.warn('[Constructor] createOrder rejected', result);
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Constructor] error when creating order', err);
+    }
+  };
+
   return (
     <section
-      className={styles.burger_constructor}
+      className={styles.constburger_constructor}
       ref={sectionRef}
     >
       {bun ? (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ width: 'calc(24px + 0.5em)', height: 24, display: 'inline-block' }} />
+        <div className={styles.bunContainer}>
+          <span className={styles.dragIcon} />
           <ConstructorElement 
             type="top" 
             isLocked 
@@ -92,7 +124,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
           />
         </div>
       ) : (
-        <p className="text text_type_main-default" style={{ textAlign: 'center', margin: '10px 0' }}>
+        <p className={`text text_type_main-default ${styles.bunPlaceholder}`}>
           Пожалуйста, перенесите сюда булку
         </p>
       )}
@@ -109,7 +141,8 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          style={{ display: 'flex', alignItems: 'center', ...provided.draggableProps.style }}
+                          className={styles.constructorItem}
+                          style={provided.draggableProps.style}
                         >
                           <span {...provided.dragHandleProps}>
                             <DragIcon type="primary" className={styles.drag_button}/>
@@ -136,8 +169,8 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
       </DragDropContext>
       
       {bun && (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <span style={{ width: 'calc(24px + 0.5em)', height: 24, display: 'inline-block' }} />
+        <div className={styles.bunContainer}>
+          <span className={styles.dragIcon} />
           <ConstructorElement 
             type="bottom" 
             isLocked 
@@ -151,7 +184,7 @@ const BurgerConstructor: React.FC<Props> = ({ onOrder }) => {
       <div className={styles.total}>
         <span className="text text_type_digits-medium">{total}</span>
         <CurrencyIcon className={styles.icon} type="primary" />
-        <Button htmlType='button' type="primary" size="medium" onClick={onOrder}>
+  <Button htmlType='button' type="primary" size="medium" onClick={handleOrderClick}>
           Оформить заказ
         </Button>
       </div>

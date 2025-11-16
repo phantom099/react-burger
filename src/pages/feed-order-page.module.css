@@ -1,0 +1,66 @@
+.wrapper {
+  width: 100%;
+}
+
+.error {
+  color: red;
+}
+
+.card {
+  background: transparent;
+}
+
+.number {
+  text-align: center;
+}
+
+.ingredientsList {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.ingredientImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+  border: 1px solid #eee;
+}
+
+.ingredientName {
+  flex: 1;
+}
+
+.errorText {
+  flex: 1;
+  color: red;
+}
+
+.price {
+  margin-right: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.totalPrice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 42px;
+}

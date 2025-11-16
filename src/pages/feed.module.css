@@ -1,0 +1,130 @@
+.wrapper {
+  width: 70%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lentaa {
+  flex: 2;
+  min-width: 0;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.card { 
+  background: #1c1c21;
+  border-radius: 32px;
+  margin-bottom: 16px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.feedContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.summarySection_block {
+  display: flex;
+  flex-direction: row;
+}
+
+.summarySection_block div {
+  width: 50%;
+  overflow-y: hidden !important;
+}
+
+.summarySection_ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 10vh;
+  overflow-y: auto;
+  min-width: 120px;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.orderName {
+  margin: 8px 0;
+}
+
+.orderFooter {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ingredientsContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 40px;
+  overflow: hidden;
+}
+
+.ingredientImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  flex: 0 0 auto;
+  transform: translateX(var(--offset) );
+}
+
+.moreIngredients {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(28, 28, 33, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  padding: 0 6px;
+  flex: 0 0 auto;
+}
+
+.priceContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.orderPending {
+  color: #F2C94C;
+}
+
+.orderDone {
+  color: #00CCCC;
+}
+
+.error {
+  color: red;
+}

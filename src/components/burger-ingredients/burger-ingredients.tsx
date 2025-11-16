@@ -1,14 +1,14 @@
 import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Tab, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { TIngredient } from '../../utils/types';
 import { useDrag } from 'react-dnd';
-import styles from'./burger-ingredients.module.css';
+import styles from './burger-ingredients.module.css';
 
 type Props = {
   ingredients: TIngredient[];
   usedIngredients: TIngredient[];
-  onIngredientClick: (item: TIngredient) => void;
+  onIngredientClick?: (item: TIngredient) => void;
 };
 
 interface IngredientCardProps {
@@ -37,23 +37,32 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onIngredien
   dragRef(internalRef);
 
   return (
-    <div ref={internalRef} style={{ opacity: isDragging ? 0.5 : 1 }}>
-      <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)} style={{ position: 'relative' }}>
-        <img className="bi-card__img" src={ingredient.image} alt={ingredient.name} />
+    <div ref={internalRef} className={`${styles.draggable}`} style={{ opacity: isDragging ? 0.5 : 1 }}>
+      <button className={styles.bicard} onClick={() => onIngredientClick(ingredient)}>
+        <img src={ingredient.image} alt={ingredient.name} />
         {usedCounts[ingredient._id] && (
           <span className={styles.selected_pos}>{usedCounts[ingredient._id] || 0}</span>
         )}
-        <div className="bi-card__price">
-          <span className="text text_type_digits-default">{ingredient.price}</span>
+        <div className="text text_type_digits-default mt-1 mb-1">
+          <span className="mr-2">{ingredient.price}</span>
           <CurrencyIcon type="primary" />
         </div>
-        <p className="text text_type_main-default bi-card__name">{ingredient.name}</p>
+        <p className="text text_type_main-default">{ingredient.name}</p>
       </button>
     </div>
   );
 };
 
-const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients, usedIngredients, onIngredientClick }) => {
+const BurgerIngredients: React.FC<Props> = ({ ingredients, usedIngredients, onIngredientClick }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleIngredientClick = (ingredient: TIngredient) => {
+    if (onIngredientClick) {
+      onIngredientClick(ingredient);
+    } else {
+      navigate(`/ingredients/${ingredient._id}`, { state: { background: location } });
+    }
+  };
   const bunRef = React.useRef<HTMLDivElement>(null);
   const sauceRef = React.useRef<HTMLDivElement>(null);
   const mainRef = React.useRef<HTMLDivElement>(null);
@@ -97,7 +106,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Булки</h2>
           <div className={styles.bi__category}>
             {groups.bun.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -105,7 +114,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Соусы</h2>
           <div className={styles.bi__category}>
             {groups.sauce.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -113,7 +122,7 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
           <h2 className="text text_type_main-medium mt-10 mb-6">Начинки</h2>
           <div className={styles.bi__category}>
             {groups.main.map(item => (
-              <IngredientCard key={item._id} ingredient={item} onIngredientClick={onIngredientClick} usedCounts={usedCounts} />
+              <IngredientCard key={item._id} ingredient={item} onIngredientClick={handleIngredientClick} usedCounts={usedCounts} />
             ))}
           </div>
         </div>
@@ -122,10 +131,5 @@ const BurgerIngredients: React.FC<Props> & { propTypes?: any } = ({ ingredients,
   );
 };
 
-BurgerIngredients.propTypes = {
-  ingredients: PropTypes.arrayOf(PropTypes.object).isRequired,
-  usedIngredients: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onIngredientClick: PropTypes.func.isRequired
-};
 
 export default BurgerIngredients;
